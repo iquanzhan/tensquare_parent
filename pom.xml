@@ -1,11 +1,3 @@
-# tensquare_parent
-基于SpringBoot+SpringCloud+SpringMVC+SpringData的Java系统
-
-## 创建父项目
-
-#### 配置pom.xml
-
-```
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -15,6 +7,9 @@
     <groupId>com.chengxiaoxiao</groupId>
     <artifactId>tensquare_parent</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>tensquare_common</module>
+    </modules>
     <packaging>pom</packaging>
 
     <name>tensquare_parent</name>
@@ -82,7 +77,5 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
-    
-</project>
-```
 
+</project>
