@@ -3,7 +3,7 @@ package entity;
 /**
  * @author Cheng Xiaoxiao
  */
-public class StstusCode {
+public class StatusCode {
     /**
      * 成功
      */
