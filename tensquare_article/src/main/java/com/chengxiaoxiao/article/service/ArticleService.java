@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -88,7 +89,7 @@ public class ArticleService {
         Article article = (Article) redisTemplate.opsForValue().get("articel_" + id);
         if (article == null) {
             article = articleDao.findById(id).get();
-            redisTemplate.opsForValue().set("articel_" + id, article);
+            redisTemplate.opsForValue().set("articel_" + id, article,1, TimeUnit.DAYS);
         }
         return article;
     }
@@ -107,6 +108,7 @@ public class ArticleService {
      * @param article
      */
     public void update(Article article) {
+        redisTemplate.delete("articel_" + article.getId());
         articleDao.save(article);
     }
 
@@ -115,6 +117,7 @@ public class ArticleService {
      * @param id
      */
     public void deleteById(String id) {
+        redisTemplate.delete("articel_" + id);
         articleDao.deleteById(id);
     }
 
