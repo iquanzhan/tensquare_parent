@@ -86,3 +86,48 @@
 </project>
 ```
 
+### Redis依赖
+
+```
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
+```
+
+### JPA参数表示
+
+```
+@Modifying
+@Query(value = "update tb_article set state='1' where id=?1", nativeQuery = true)
+public void updateState(String id);
+```
+
+?1表示方法中参数的对应位置
+
+
+
+### Docker环境搭建
+
+#### 1.创建mysql
+
+下载镜像：
+
+```
+docker pull centos/mysql‐57‐centos7
+```
+
+创建容器：
+
+```
+docker run ‐di ‐‐name=tensquare_mysql ‐p 3306:3306 ‐e MYSQL_ROOT_PASSWORD=123456 centos/mysql‐57‐centos7
+```
+
+#### 2.创建redis
+
+创建容器
+
+```
+docker run -di --name=tensquare_redis -p 6379:6379 redis
+```
+

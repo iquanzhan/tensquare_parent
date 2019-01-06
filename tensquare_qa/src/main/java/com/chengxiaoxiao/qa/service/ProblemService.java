@@ -1,28 +1,25 @@
 package com.chengxiaoxiao.qa.service;
 
+import com.chengxiaoxiao.qa.dao.ProblemDao;
+import com.chengxiaoxiao.qa.pojo.Problem;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
 
 import util.IdWorker;
-
-import com.chengxiaoxiao.qa.dao.ProblemDao;
-import com.chengxiaoxiao.qa.pojo.Problem;
 
 /**
  * 服务层
@@ -38,6 +35,43 @@ public class ProblemService {
 	
 	@Autowired
 	private IdWorker idWorker;
+
+	/**
+	 * 获取最新问题列表
+	 * @param labelId
+	 * @param page
+	 * @param size
+	 * @return
+	 */
+	public Page<Problem> newList(String labelId, int page,int size){
+		Pageable pageable = PageRequest.of(page-1,size);
+		return problemDao.newList(labelId,pageable);
+	}
+
+	/**
+	 * 获取热门问题列表
+	 * @param labelId
+	 * @param page
+	 * @param size
+	 * @return
+	 */
+	public Page<Problem> hotList(String labelId, int page,int size){
+		Pageable pageable = PageRequest.of(page-1,size);
+		return problemDao.hotList(labelId,pageable);
+	}
+
+	/**
+	 * 获取热门问题列表
+	 * @param labelId
+	 * @param page
+	 * @param size
+	 * @return
+	 */
+	public Page<Problem> waitList(String labelId, int page,int size){
+		Pageable pageable = PageRequest.of(page-1,size);
+		return problemDao.waitList(labelId,pageable);
+	}
+
 
 	/**
 	 * 查询全部列表
