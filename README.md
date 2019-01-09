@@ -95,6 +95,29 @@
 </dependency>
 ```
 
+### mongDB驱动
+
+```
+<dependencies>
+    <dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>mongodb-driver</artifactId>
+        <version>3.6.3</version>
+    </dependency>
+</dependencies>
+```
+
+### SpringDataMongoDB
+
+```
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-mongodb</artifactId>
+</dependency>
+```
+
+
+
 ### JPA参数表示
 
 ```
@@ -129,5 +152,11 @@ docker run ‐di ‐‐name=tensquare_mysql ‐p 3306:3306 ‐e MYSQL_ROOT_PASSW
 
 ```
 docker run -di --name=tensquare_redis -p 6379:6379 redis
+```
+
+#### 3.创建mongodb
+
+```
+docker run -di --name=tensquare_mongo -p 27017:27017 mongo
 ```
 
