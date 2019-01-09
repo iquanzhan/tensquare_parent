@@ -6,6 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import util.IdWorker;
 
@@ -24,6 +29,9 @@ public class SpitService {
     private SpitDao spitDao;
     @Autowired
     private IdWorker idWorker;
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
 
     /**
      * 查询全部记录
@@ -84,6 +92,20 @@ public class SpitService {
     public Page<Spit> findByParentId(String parentId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return spitDao.findByParentId(parentId, pageable);
+    }
+
+
+    /**
+     * 点赞
+     *
+     * @param id
+     */
+    public void updateThumbup(String id) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(id));
+        Update update = new Update();
+        update.inc("thumbup", 1);
+        mongoTemplate.updateFirst(query, update, "spit");
     }
 
 

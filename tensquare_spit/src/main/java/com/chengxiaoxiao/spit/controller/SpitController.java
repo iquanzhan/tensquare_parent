@@ -8,6 +8,7 @@ import entity.Result;
 import entity.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -23,6 +24,8 @@ public class SpitController {
 
     @Autowired
     private SpitService spitService;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @RequestMapping(method = RequestMethod.GET)
     public Result findAll() {
@@ -58,4 +61,20 @@ public class SpitController {
         Page<Spit> pages = spitService.findByParentId(parentid, page, size);
         return new Result(true, StatusCode.OK, "查询成功", new PageResult<Spit>(pages.getTotalElements(), pages.getContent()));
     }
+
+    @RequestMapping(value = "/thumbup/{spitId}", method = RequestMethod.PUT)
+    public Result thumbup(@PathVariable String spitId) {
+
+        String userId = "100100";
+        //控制不能重复点赞
+        if (redisTemplate.opsForValue().get("thumbup_" + userId + "_" + spitId) != null) {
+            return new Result(false, StatusCode.ACCESSERROR, "您已经点过赞了");
+        }
+        spitService.updateThumbup(spitId);
+        redisTemplate.opsForValue().set("thumbup_" + userId + "_" + spitId, "1");
+        
+        return new Result(true, StatusCode.OK, "点赞成功");
+    }
+
+
 }
