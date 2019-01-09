@@ -14,6 +14,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import util.IdWorker;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -60,6 +61,21 @@ public class SpitService {
      */
     public void add(Spit spit) {
         spit.set_id(idWorker.nextId() + "");
+        spit.setPublishtime(new Date());
+        spit.setComment(0);
+        spit.setShare(0);
+        spit.setThumbup(0);
+        spit.setVists(0);
+        spit.setState("1");
+        if(spit.getParentId()!=null){
+            //为评论
+            Query query = new Query();
+            query.addCriteria(Criteria.where("_id").is(spit.getParentId()));
+            Update update = new Update();
+            update.inc("thumbup",1);
+            mongoTemplate.updateFirst(query,update,"spit");
+
+        }
         spitDao.save(spit);
     }
 
