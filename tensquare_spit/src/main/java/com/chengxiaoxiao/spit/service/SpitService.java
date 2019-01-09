@@ -3,6 +3,9 @@ package com.chengxiaoxiao.spit.service;
 import com.chengxiaoxiao.spit.dao.SpitDao;
 import com.chengxiaoxiao.spit.pojo.Spit;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import util.IdWorker;
 
@@ -68,6 +71,19 @@ public class SpitService {
      */
     public void deleteById(String id) {
         spitDao.deleteById(id);
+    }
+
+    /**
+     * 根据父ID分页查询
+     *
+     * @param parentId
+     * @param page
+     * @param size
+     * @return
+     */
+    public Page<Spit> findByParentId(String parentId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return spitDao.findByParentId(parentId, pageable);
     }
 
 
