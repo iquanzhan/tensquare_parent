@@ -227,7 +227,16 @@ spring:
     host: 192.168.217.130
 ```
 
-### 使用commons-lang3
+### 使用commons-lang
+
+```
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.5</version>
+            <scope>compile</scope>
+        </dependency>
+```
 
 
 
