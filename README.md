@@ -95,6 +95,13 @@
 </dependency>
 ```
 
+application.yml:
+
+```
+  redis:
+    host: 192.168.217.130
+```
+
 ### mongDB驱动
 
 ```
@@ -115,6 +122,14 @@
     <artifactId>spring-boot-starter-data-mongodb</artifactId>
 </dependency>
 ```
+application.yml:
+
+```
+  data:
+    mongodb:
+      host: 192.168.217.130
+      database: spitdb
+```
 
 ### elasticsearch
 
@@ -123,6 +138,14 @@
     <groupId>org.springframework.data</groupId>
     <artifactId>spring-data-elasticsearch</artifactId>
 </dependency>
+```
+
+application.yml
+
+```
+  data:
+    elasticsearch:
+      cluster-nodes: 192.168.217.130:9300
 ```
 
 ### 配置elastsearch可以跨域访问
@@ -186,9 +209,29 @@ public void updateState(String id);
 
 ?1表示方法中参数的对应位置
 
+### RabbitMQ搭建
+
+```
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+            <scope>test</scope>
+        </dependency>
+```
+
+application.yml
+
+```
+spring:
+  rabbitmq:
+    host: 192.168.217.130
+```
+
+### 使用commons-lang3
 
 
-### Docker环境搭建
+
+# Docker环境搭建
 
 #### 1.创建mysql
 
@@ -246,6 +289,12 @@ docker run -di --name=tensquare_elasticsearch -p 9200:9200 -p 9300:9300 elastics
 * docker run -di --name=my_head -p 9100:9100 mobz/elasticsearch-head:5
 
 wordcount可以实现热词统计
+
+#### 7.RabbitMQ安装
+
+```
+docker run -di --name=tensquare_rabbitmq -p 5671:5671 -p 5672:5672 -p 4369:4369 -p 15671:15671 -p 15672:15672 -p 25672:25672 rabbitmq:management
+```
 
 
 
