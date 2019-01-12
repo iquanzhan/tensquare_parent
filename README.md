@@ -116,6 +116,64 @@
 </dependency>
 ```
 
+### elasticsearch
+
+```
+<dependency>
+    <groupId>org.springframework.data</groupId>
+    <artifactId>spring-data-elasticsearch</artifactId>
+</dependency>
+```
+
+### 配置elastsearch可以跨域访问
+
+```
+http.cors.enabled: true
+http.cors.allow-origin: "*"
+```
+
+### logstash配置mysql同步
+
+```
+input {
+  jdbc {
+	  # mysql jdbc connection string to our backup databse
+	  jdbc_connection_string => "jdbc:mysql://192.168.217.130:3306/tensquare_article?characterEncoding=UTF8"
+	  # the user we wish to excute our statement as
+	  jdbc_user => "root"
+	  jdbc_password => "123456"
+	  # the path to our downloaded jdbc driver  
+	  jdbc_driver_library => "C:\java\logstash-5.6.8\mysqletc\mysql-connector-java-5.1.46.jar"
+	  # the name of the driver class for mysql
+	  jdbc_driver_class => "com.mysql.jdbc.Driver"
+	  jdbc_paging_enabled => "true"
+	  jdbc_page_size => "50000"
+	  #以下对应着要执行的sql的绝对路径。
+	  #statement_filepath => ""
+	  statement => "select id,title,content from tb_article"
+	  #定时字段 各字段含义（由左至右）分、时、天、月、年，全部为*默认含义为每分钟都更新（测试结果，不同的话请留言指出）
+      schedule => "* * * * *"
+  }
+}
+
+output {
+  elasticsearch {
+	  #ESIP地址与端口
+	  hosts => "localhost:9200" 
+	  #ES索引名称（自己定义的）
+	  index => "tensquare"
+	  #自增ID编号
+	  document_id => "%{id}"
+	  document_type => "articel"
+  }
+  stdout {
+      #以JSON格式输出
+      codec => json_lines
+  }
+}
+
+```
+
 
 
 ### JPA参数表示
@@ -160,3 +218,98 @@ docker run -di --name=tensquare_redis -p 6379:6379 redis
 docker run -di --name=tensquare_mongo -p 27017:27017 mongo
 ```
 
+#### 4.创建elasticSearch
+
+```
+docker run -di --name=tensquare_elasticsearch -p 9200:9200 -p 9300:9300 elasticsearch:5.6.8
+```
+
+#### 5.IK分词器安装
+
+* ik文件上传至宿主机
+* 在宿主机中将ik文件夹拷贝到容器内 /usr/share/elasticsearch/plugins 目录下
+* docker cp ik tensquare_elasticsearch:/usr/share/elasticsearch/plugins/
+
+#### 6.HEAD插件安装
+
+* 修改/usr/share/elasticsearch.yml，允许跨域
+
+* ```
+  http.cors.enabled: true
+  http.cors.allow-origin: "*"
+  
+  //重新启动docker以生效
+  ```
+
+* 创建head容器
+
+* docker run -di --name=my_head -p 9100:9100 mobz/elasticsearch-head:5
+
+wordcount可以实现热词统计
+
+
+
+## 挂载docker配置文件到宿主机
+
+1.进入docker所在目录
+
+```
+docker exec -it tensquare_elasticsearch /bin/bash
+```
+
+2.拷贝文件至宿主机
+
+```
+docker cp tensquare_elasticsearch:/usr/share/elasticsearch/config/elasticsearch.yml /usr/share/elasticsearch.yml
+```
+
+3.停止和删除原来的容器
+
+```
+docker stop tensquare_elasticsearch
+docker rm tensquare_elasticsearch
+```
+
+4.重新创建容器命令
+
+```
+docker run -di --name=tensquare_elasticsearch -p 9200:9200 -p 9300:9300 -v /usr/share/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml elasticsearch:5.6.8
+```
+
+5.修改都能访问
+
+```
+vi /usr/share/elasticsearch.yml
+删除transport.host: 0.0.0.0前#
+
+```
+
+
+
+此时启动容器会出现错误，比如最多打开的文件的个数以及虚拟内存区域数量等等，如果你放开了此配置，意味着需要打开更多的文件以及虚拟内存，所以我们还需要系统调优。
+
+1.修改/etc/security/limits.conf，添加如下内容
+
+ ```
+  * soft nofile 65536
+  * hard nofile 65536
+ ```
+
+​	nofile是单个进程允许打开的最大文件个数 
+
+2.修改/etc/sysctl.conf，追加内容
+
+```
+vm.max_map_count=655360
+```
+
+​	限制一个进程可以拥有的VMA(虚拟内存区域)的数量
+
+3.执行下面命令 修改内核参数马上生效
+
+```
+sysctl -p
+```
+
+
+​	重新启动虚拟机，再次启动容器，发现已经可以启动并远程访问
