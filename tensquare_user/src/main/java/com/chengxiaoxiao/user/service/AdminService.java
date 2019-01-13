@@ -20,7 +20,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
 
-import io.jsonwebtoken.Claims;
 import util.IdWorker;
 import util.JwtUtil;
 
@@ -109,25 +108,10 @@ public class AdminService {
      * @param id
      */
     public void deleteById(String id) {
-        String authorization = request.getHeader("Authorization");
-        if (authorization == null || "".equals(authorization)) {
+        String token = (String) request.getAttribute("claims_admin");
+        if (token == null || "".equals(token)) {
             throw new RuntimeException("权限不足");
         }
-        if (!authorization.startsWith("Bearer ")) {
-            throw new RuntimeException("权限不足");
-        }
-        String token = authorization.substring(7);
-
-        try {
-            Claims claims = jwtUtil.parseJWT(token);
-            String role = (String) claims.get("roles");
-            if (role == null || "".equals(role) || !"admin".equals(role)) {
-                throw new RuntimeException("权限不足");
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("权限不足");
-        }
-
         adminDao.deleteById(id);
     }
 
