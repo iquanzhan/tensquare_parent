@@ -238,6 +238,57 @@ spring:
         </dependency>
 ```
 
+### 使用BCrypt加密
+
+```
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+```
+
+并在Application中增加Bean
+
+```
+    @Bean
+    public BCryptPasswordEncoder encoder() {
+        return new BCryptPasswordEncoder();
+    }
+```
+
+配置Spring Security可以匿名访问所有路径
+
+```
+/**
+ * @author Cheng Xiaoxiao
+ */
+@Configuration
+@EnableWebSecurity
+public class WebSecurity extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+
+        http.
+                authorizeRequests().
+                antMatchers("/**")
+                .permitAll()
+                .anyRequest().authenticated()
+                .and().csrf().disable();
+    }
+}
+```
+
+### 使用JJWT
+
+```
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.6.0</version>
+        </dependency>
+```
+
 
 
 # Docker环境搭建
