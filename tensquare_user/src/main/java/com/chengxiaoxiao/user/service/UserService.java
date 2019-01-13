@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -44,6 +45,9 @@ public class UserService {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private BCryptPasswordEncoder encoder;
 
     /**
      * 发送验证码短信
@@ -109,6 +113,7 @@ public class UserService {
      * @param user
      */
     public void add(User user) {
+        user.setPassword(encoder.encode(user.getPassword()));
         user.setId(idWorker.nextId() + "");
         user.setFollowcount(0);
         user.setFanscount(0);
@@ -191,4 +196,11 @@ public class UserService {
 
     }
 
+    public User login(User user) {
+        User userLogin = userDao.findByMobile(user.getMobile());
+        if (userLogin != null && encoder.matches(user.getPassword(), userLogin.getPassword())) {
+            return userLogin;
+        }
+        return null;
+    }
 }

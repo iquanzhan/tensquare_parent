@@ -34,6 +34,17 @@ public class UserController {
     @Autowired
     RedisTemplate redisTemplate;
 
+
+    @RequestMapping(value = "/login",method = RequestMethod.POST)
+    public Result login(@RequestBody User user){
+        User userLogin =userService.login(user);
+
+        if(userLogin==null){
+            return new Result(false,StatusCode.LOGINERROR,"用户名或者密码错误");
+        }
+        return new Result(true,StatusCode.OK,"登录成功");
+    }
+
     @RequestMapping(value = "/sendsms/{mobile}", method = RequestMethod.POST)
     public Result sendSms(@PathVariable String mobile) {
         userService.sendSms(mobile);
