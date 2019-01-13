@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import entity.PageResult;
 import entity.Result;
 import entity.StatusCode;
+import util.JwtUtil;
 
 /**
  * 控制器层
@@ -29,6 +31,8 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public Result login(@RequestBody Admin admin) {
@@ -36,7 +40,12 @@ public class AdminController {
         if (adminUser == null) {
             return new Result(false, StatusCode.LOGINERROR, "用户名或者密码错误");
         }
-        return new Result(true, StatusCode.OK, "登录成功");
+
+        String token = jwtUtil.createJWT(adminUser.getId(), adminUser.getLoginname(), "admin");
+        Map<String, Object> map = new HashMap<>();
+        map.put("token", token);
+        map.put("role", "admin");
+        return new Result(true, StatusCode.OK, "登录成功",map);
     }
 
     /**
