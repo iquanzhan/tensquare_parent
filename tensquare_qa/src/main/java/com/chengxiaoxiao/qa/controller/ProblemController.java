@@ -1,5 +1,6 @@
 package com.chengxiaoxiao.qa.controller;
 
+import com.chengxiaoxiao.qa.client.BaseClient;
 import com.chengxiaoxiao.qa.pojo.Problem;
 import com.chengxiaoxiao.qa.service.ProblemService;
 
@@ -34,6 +35,14 @@ public class ProblemController {
 
     @Autowired
     private HttpServletRequest request;
+
+    @Autowired
+    private BaseClient baseClient;
+
+    @RequestMapping("/label/{labelId}")
+    public Result findLabelByid(@PathVariable String labelId) {
+        return baseClient.findById(labelId);
+    }
 
     @RequestMapping(value = "/newlist/{label}/{page}/{size}", method = RequestMethod.GET)
     public Result newList(@PathVariable String label, @PathVariable int page, @PathVariable int size) {
