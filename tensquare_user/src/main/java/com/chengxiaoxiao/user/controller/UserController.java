@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import entity.PageResult;
 import entity.Result;
 import entity.StatusCode;
+import util.JwtUtil;
 
 /**
  * 控制器层
@@ -34,15 +36,23 @@ public class UserController {
     @Autowired
     RedisTemplate redisTemplate;
 
+    @Autowired
+    private JwtUtil jwtUtil;
 
-    @RequestMapping(value = "/login",method = RequestMethod.POST)
-    public Result login(@RequestBody User user){
-        User userLogin =userService.login(user);
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public Result login(@RequestBody User user) {
+        User userLogin = userService.login(user);
 
-        if(userLogin==null){
-            return new Result(false,StatusCode.LOGINERROR,"用户名或者密码错误");
+        if (userLogin == null) {
+            return new Result(false, StatusCode.LOGINERROR, "用户名或者密码错误");
         }
-        return new Result(true,StatusCode.OK,"登录成功");
+
+        String token = jwtUtil.createJWT(user.getId(), user.getMobile(), "user");
+        Map<String, Object> map = new HashMap<>();
+        map.put("token", token);
+        map.put("roles", "user");
+
+        return new Result(true, StatusCode.OK, "登录成功", map);
     }
 
     @RequestMapping(value = "/sendsms/{mobile}", method = RequestMethod.POST)

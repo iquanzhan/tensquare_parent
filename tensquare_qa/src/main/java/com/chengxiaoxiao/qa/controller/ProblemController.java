@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import entity.PageResult;
 import entity.Result;
 import entity.StatusCode;
@@ -29,6 +31,9 @@ public class ProblemController {
 
     @Autowired
     private ProblemService problemService;
+
+    @Autowired
+    private HttpServletRequest request;
 
     @RequestMapping(value = "/newlist/{label}/{page}/{size}", method = RequestMethod.GET)
     public Result newList(@PathVariable String label, @PathVariable int page, @PathVariable int size) {
@@ -96,6 +101,11 @@ public class ProblemController {
      */
     @RequestMapping(method = RequestMethod.POST)
     public Result add(@RequestBody Problem problem) {
+        String token = (String) request.getAttribute("claims_user");
+        if (token == null || "".equals(token)) {
+            return new Result(false, StatusCode.ERROR, "权限不足");
+        }
+
         problemService.add(problem);
         return new Result(true, StatusCode.OK, "增加成功");
     }
