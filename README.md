@@ -86,6 +86,32 @@
 </project>
 ```
 
+### JAP依赖
+
+```
+        <dependency>
+          <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+```
+
+application:
+
+```
+datasource:
+  driverClassName: com.mysql.jdbc.Driver
+  url: jdbc:mysql://192.168.217.130:3306/tensquare_user?characterEncoding=UTF8
+  username: root
+  password: 123456
+jpa:
+  database: MySQL
+  show-sql: true
+```
+
 ### Redis依赖
 
 ```
