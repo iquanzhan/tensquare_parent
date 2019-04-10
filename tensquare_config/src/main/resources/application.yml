@@ -8,3 +8,10 @@ spring:
       server:
         git:
           uri: https://gitee.com/iquanzhan/tensquare-config.git
+  rabbitmq:
+    host: 192.168.217.130
+management:
+  endpoints:
+    web:
+      exposure:
+        include: bus‐refresh
